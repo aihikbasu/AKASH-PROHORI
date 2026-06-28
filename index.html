@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AKASH PROHORI — Weather Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <div class="logo">
+      <div class="logo-icon">🌤</div>
+      <div class="logo-text">
+        <span class="logo-bn">AKASH PROHORI</span>
+        <span class="logo-en">Weather Intelligence Platform</span>
+      </div>
+    </div>
+    <div class="header-meta">
+      <div class="location-selector" id="loc-btn" onclick="toggleLocDropdown()">
+        📍 <span id="loc-label">Kolkata, WB — IN</span>
+        <span style="color:var(--text-muted);margin-left:4px;">▾</span>
+      </div>
+      <div id="loc-dropdown" style="display:none;position:absolute;top:62px;right:160px;background:#0d1f3c;border:1px solid rgba(0,229,255,0.2);border-radius:12px;z-index:999;min-width:220px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.5);">
+        <div style="padding:8px 12px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;color:rgba(150,185,215,0.5);border-bottom:1px solid rgba(255,255,255,0.06);">SELECT LOCATION</div>
+        <div id="loc-search-wrap" style="padding:8px 10px;border-bottom:1px solid rgba(255,255,255,0.06);">
+          <input id="loc-search" type="text" placeholder="Search city..." oninput="filterLocations()" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(0,229,255,0.2);border-radius:6px;padding:6px 10px;font-size:12px;color:#e8f4fd;font-family:'DM Sans',sans-serif;outline:none;" />
+        </div>
+        <div id="loc-list" style="max-height:240px;overflow-y:auto;"></div>
+      </div>
+      <div class="live-badge"><div class="live-dot"></div> LIVE</div>
+      <div class="header-time" id="live-clock">—</div>
+    </div>
+  </header>
+
+  <nav>
+    <div class="nav-tab active" onclick="switchTab('overview',this)">Overview</div>
+    <div class="nav-tab" onclick="switchTab('forecast',this)">7-Day Forecast</div>
+    <div class="nav-tab" onclick="switchTab('alerts',this)">Disaster Alerts</div>
+    <div class="nav-tab" onclick="switchTab('airquality',this)">Air Quality</div>
+    <div class="nav-tab" onclick="switchTab('travel',this)">Travel Safety</div>
+    <div class="nav-tab" onclick="switchTab('analytics',this)">Analytics</div>
+  </nav>
+
+  <main>
+
+    <div class="tab-content active" id="tab-overview">
+
+      <div class="alert-banner">
+        <div class="alert-icon">⚡</div>
+        <div class="alert-text">Active cyclone warning: Bay of Bengal depression tracking NNW — potential landfall in 36–48 hrs</div>
+        <div class="alert-tag">ORANGE ALERT</div>
+      </div>
+
+      <div class="grid-hero">
+
+        <div class="card">
+          <div class="card-label">Current Conditions — Updated 2 min ago</div>
+          <div class="weather-hero">
+            <div class="weather-top">
+              <div>
+                <div class="temp-display">
+                  <div class="temp-val" id="cur-temp">32</div>
+                  <div class="temp-unit">°C</div>
+                </div>
+                <div class="weather-desc" id="cur-desc">Partly Cloudy</div>
+                <div class="weather-location" id="cur-location">↑ Kolkata / West Bengal</div>
+              </div>
+              <div class="weather-icon-large" id="cur-icon">⛅</div>
+            </div>
+            <div class="weather-stats">
+              <div class="w-stat">
+                <span class="w-stat-val" id="cur-hum">78%</span>
+                <span class="w-stat-label">Humidity</span>
+              </div>
+              <div class="w-stat">
+                <span class="w-stat-val" id="cur-wind">18 km/h</span>
+                <span class="w-stat-label">Wind</span>
+              </div>
+              <div class="w-stat">
+                <span class="w-stat-val" id="cur-precip">12%</span>
+                <span class="w-stat-label">Precip.</span>
+              </div>
+              <div class="w-stat">
+                <span class="w-stat-val" id="cur-pressure">1009 hPa</span>
+                <span class="w-stat-label">Pressure</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-label">Composite Risk Score</div>
+          <div class="risk-card">
+            <div class="risk-score-ring">
+              <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="8"/>
+                <circle cx="60" cy="60" r="50" fill="none" stroke="#ff6d00" stroke-width="8" stroke-dasharray="314" stroke-dashoffset="110" stroke-linecap="round"/>
+              </svg>
+              <div class="risk-score-val">
+                <div class="risk-num">65</div>
+                <div class="risk-label-small">HIGH RISK</div>
+              </div>
+            </div>
+            <div class="risk-breakdown">
+              <div class="risk-row">
+                <div class="risk-row-label">Flood Risk</div>
+                <div class="risk-bar-track">
+                  <div class="risk-bar-fill" style="width:72%;background:#ff5252;"></div>
+                </div>
+                <div class="risk-row-val">72</div>
+              </div>
+              <div class="risk-row">
+                <div class="risk-row-label">Storm Risk</div>
+                <div class="risk-bar-track">
+                  <div class="risk-bar-fill" style="width:60%;background:#ff6d00;"></div>
+                </div>
+                <div class="risk-row-val">60</div>
+              </div>
+              <div class="risk-row">
+                <div class="risk-row-label">Heat Index</div>
+                <div class="risk-bar-track">
+                  <div class="risk-bar-fill" style="width:55%;background:#ffd600;"></div>
+                </div>
+                <div class="risk-row-val">55</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="grid-4">
+        <div class="card metric-card">
+          <div class="card-label">UV Index</div>
+          <div class="metric-val" style="color:var(--aurora-amber);" id="cur-uv">8</div>
+          <div class="metric-sub">Very High Protection Required</div>
+          <div class="metric-trend trend-up">▲ Increasing</div>
+        </div>
+        <div class="card metric-card">
+          <div class="card-label">Visibility</div>
+          <div class="metric-val" id="cur-vis">6.5 km</div>
+          <div class="metric-sub">Haze layer affecting distance</div>
+          <div class="metric-trend trend-stable">● Stable</div>
+        </div>
+        <div class="card metric-card">
+          <div class="card-label">Dew Point</div>
+          <div class="metric-val" id="cur-dew">25°C</div>
+          <div class="metric-sub">Extremely oppressive atmosphere</div>
+          <div class="metric-trend trend-up">▲ Rising</div>
+        </div>
+        <div class="card metric-card">
+          <div class="card-label">Air Quality</div>
+          <div class="metric-val" style="color:var(--aurora-green);">Good (42)</div>
+          <div class="metric-sub">PM2.5: 11 µg/m³ · PM10: 38</div>
+          <div class="metric-trend trend-down">▼ Improving</div>
+        </div>
+      </div>
+
+      <div class="section-head">
+        <div class="section-title">24-Hour Predictive Timeline</div>
+        <div class="section-action">Detailed view →</div>
+      </div>
+
+      <div class="card" style="margin-bottom:1.5rem;">
+        <div class="hourly-strip">
+          <div class="hour-item now">
+            <div class="hour-time">NOW</div>
+            <div class="hour-icon">⛅</div>
+            <div class="hour-temp">32°</div>
+            <div class="hour-rain">12%</div>
+          </div>
+          <div class="hour-item">
+            <div class="hour-time">1PM</div>
+            <div class="hour-icon">☀️</div>
+            <div class="hour-temp">33°</div>
+            <div class="hour-rain">8%</div>
+          </div>
+          <div class="hour-item">
+            <div class="hour-time">2PM</div>
+            <div class="hour-icon">☀️</div>
+            <div class="hour-temp">34°</div>
+            <div class="hour-rain">5%</div>
+          </div>
+          <div class="hour-item">
+            <div class="hour-time">3PM</div>
+            <div class="hour-icon">🌤</div>
+            <div class="hour-temp">34°</div>
+            <div class="hour-rain">8%</div>
+          </div>
+          <div class="hour-item">
+            <div class="hour-time">4PM</div>
+            <div class="hour-icon">⛅</div>
+            <div class="hour-temp">33°</div>
+            <div class="hour-rain">15%</div>
+          </div>
+          <div class="hour-item">
+            <div class="hour-time">5PM</div>
+            <div class="hour-icon">🌦</div>
+            <div class="hour-temp">31°</div>
+            <div class="hour-rain">35%</div>
+          </div>
+          <div class="hour-item">
+            <div class="hour-time">6PM</div>
+            <div class="hour-icon">🌧</div>
+            <div class="hour-temp">29°</div>
+            <div class="hour-rain">65%</div>
+          </div>
+          <div class="hour-item">
+            <div class="hour-time">7PM</div>
+            <div class="hour-icon">⛈</div>
+            <div class="hour-temp">27°</div>
+            <div class="hour-rain">80%</div>
+          </div>
+          <div class="hour-item">
+            <div class="hour-time">8PM</div>
+            <div class="hour-icon">🌩</div>
+            <div class="hour-temp">26°</div>
+            <div class="hour-rain">75%</div>
+          </div>
+          <div class="hour-item">
+            <div class="hour-time">9PM</div>
+            <div class="hour-icon">🌧</div>
+            <div class="hour-temp">25°</div>
+            <div class="hour-rain">60%</div>
+          </div>
+          <div class="hour-item">
+            <div class="hour-time">10PM</div>
+            <div class="hour-icon">🌦</div>
+            <div class="hour-temp">25°</div>
+            <div class="hour-rain">40%</div>
+          </div>
+          <div class="hour-item">
+            <div class="hour-time">11PM</div>
+            <div class="hour-icon">🌙</div>
+            <div class="hour-temp">24°</div>
+            <div class="hour-rain">20%</div>
+          </div>
+          <div class="hour-item">
+            <div class="hour-time">12AM</div>
+            <div class="hour-icon">🌙</div>
+            <div class="hour-temp">23°</div>
+            <div class="hour-rain">10%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-3">
+
+        <div class="card">
+          <div class="section-head">
+            <div class="section-title">Active Alerts</div>
+            <div class="section-action">View all →</div>
+          </div>
+          <div class="alert-list">
+            <div class="alert-item alert-extreme">
+              <div class="alert-item-icon">🌀</div>
+              <div class="alert-item-body">
+                <div class="alert-item-title">Cyclone Watch — BOB Depression</div>
+                <div class="alert-item-desc">Landfall predicted near Odisha/Bengal coast. Evacuations advised in coastal zones.</div>
+              </div>
+              <div class="alert-severity sev-extreme">EXTREME</div>
+            </div>
+            <div class="alert-item alert-high">
+              <div class="alert-item-icon">🌊</div>
+              <div class="alert-item-body">
+                <div class="alert-item-title">Flood Warning — Damodar Valley</div>
+                <div class="alert-item-desc">Water level at 94% capacity. Low-lying areas at risk by tonight.</div>
+              </div>
+              <div class="alert-severity sev-high">HIGH</div>
+            </div>
+            <div class="alert-item alert-medium">
+              <div class="alert-item-icon">⛈</div>
+              <div class="alert-item-body">
+                <div class="alert-item-title">Thunderstorm Advisory</div>
+                <div class="alert-item-desc">Isolated severe thunderstorms with lightning, 5–9 PM.</div>
+              </div>
+              <div class="alert-severity sev-medium">MEDIUM</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-label">Hydrological Telemetry Stations</div>
+          <div class="gauge-container">
+            <div class="gauge-bar-wrap">
+              <div class="gauge-bar-outer"><div class="gauge-bar-fill" style="height:88%;background:#ff1744;"></div></div>
+              <span class="gauge-bar-label">KGP</span>
+            </div>
+            <div class="gauge-bar-wrap">
+              <div class="gauge-bar-outer"><div class="gauge-bar-fill" style="height:68%;background:#7c4dff;"></div></div>
+              <span class="gauge-bar-label">DGP</span>
+            </div>
+            <div class="gauge-bar-wrap">
+              <div class="gauge-bar-outer"><div class="gauge-bar-fill" style="height:85%;background:#ff5252;"></div></div>
+              <span class="gauge-bar-label">MID</span>
+            </div>
+            <div class="gauge-bar-wrap">
+              <div class="gauge-bar-outer"><div class="gauge-bar-fill" style="height:52%;background:#00bfa5;"></div></div>
+              <span class="gauge-bar-label">BUR</span>
+            </div>
+            <div class="gauge-bar-wrap">
+              <div class="gauge-bar-outer"><div class="gauge-bar-fill" style="height:91%;background:#ff1744;"></div></div>
+              <span class="gauge-bar-label">HLD</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;margin-top:14px;">
+            <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text-secondary);">
+              <span class="safety-dot" style="background:#ff1744;"></span>
+              <span>Haldia Port Station gauge approaching critical danger mark (91%)</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text-secondary);">
+              <span class="safety-dot" style="background:#ff5252;"></span>
+              <span>Midnapore Rural monitoring post reports rapid structural load shifts</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="card map-card">
+          <div class="card-label">Radar Map — West Bengal</div>
+          <div class="map-grid"></div>
+          <div class="map-overlay">
+            <div style="text-align:center;padding:10px 0;">
+              <div class="map-location-dot"></div>
+              <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--aurora-cyan);letter-spacing:1px;">22.57°N 88.36°E</div>
+              <div style="font-size:11px;color:var(--text-muted);margin-top:4px;">Kolkata — District HQ</div>
+            </div>
+            <div class="map-zones">
+              <div class="map-zone-pill" style="background:rgba(255,23,68,0.12);border-color:rgba(255,23,68,0.35);color:#ff5252;">🔴 Coastal High-Risk</div>
+              <div class="map-zone-pill" style="background:rgba(255,109,0,0.1);border-color:rgba(255,109,0,0.3);color:#ff6d00;">🟠 Flood Warning</div>
+              <div class="map-zone-pill" style="background:rgba(255,214,0,0.1);border-color:rgba(255,214,0,0.3);color:#ffd600;">🟡 Storm Watch</div>
+              <div class="map-zone-pill" style="background:rgba(0,230,118,0.08);border-color:rgba(0,230,118,0.25);color:#00e676;">🟢 Low Risk</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="tab-content" id="tab-forecast">
+      <div class="grid-hero">
+        <div class="card">
+          <div class="card-label">Temperature & Precipitation Trends (7-Day Outlook)</div>
+          <div class="chart-wrap" style="height:280px;">
+            <canvas id="forecastChart" role="img" aria-label="Line graph depicting the 7-day temperature and rain distribution trends"></canvas>
+          </div>
+        </div>
+        <div class="card" style="display:flex;flex-direction:column;justify-content:space-between;">
+          <div>
+            <div class="card-label">Meteorological Narrative</div>
+            <div style="font-size:13px;color:var(--text-secondary);line-height:1.6;margin-bottom:12px;">
+              An intensifiying cyclical system in deep sea blocks westerly winds. Expect high humidity saturation up to 94% on Wednesday through Friday. Severe convective cells likely to generate convective squalls across southern districts on Thursday evening.
+            </div>
+          </div>
+          <div style="background:rgba(255,255,255,0.03);border-radius:10px;padding:12px;border:1px solid rgba(255,255,255,0.04);">
+            <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--aurora-cyan);margin-bottom:4px;">PROBABILITY MATRIX</div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.04);"><span>Lightning Strike</span><span style="color:#ff6d00;">HIGH (74%)</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.04);"><span>Flash Flooding</span><span style="color:#ff5252;">CRITICAL (82%)</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;padding:4px 0;"><span>Gale Winds</span><span style="color:#ffd600;">MED (45%)</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="section-head"><div class="section-title">Extended Strategic Forecast</div></div>
+      <div class="forecast-strip">
+        <div class="forecast-item today">
+          <div class="forecast-day">MON (TODAY)</div>
+          <div class="forecast-icon">⛅</div>
+          <div class="forecast-hi">34°</div>
+          <div class="forecast-lo">26°</div>
+        </div>
+        <div class="forecast-item">
+          <div class="forecast-day">TUE (02 JUN)</div>
+          <div class="forecast-icon">☀️</div>
+          <div class="forecast-hi">35°</div>
+          <div class="forecast-lo">27°</div>
+        </div>
+        <div class="forecast-item">
+          <div class="forecast-day">WED (03 JUN)</div>
+          <div class="forecast-icon">☁️</div>
+          <div class="forecast-hi">33°</div>
+          <div class="forecast-lo">25°</div>
+        </div>
+        <div class="forecast-item">
+          <div class="forecast-day">THU (04 JUN)</div>
+          <div class="forecast-icon">⛈</div>
+          <div class="forecast-hi">30°</div>
+          <div class="forecast-lo">24°</div>
+        </div>
+        <div class="forecast-item">
+          <div class="forecast-day">FRI (05 JUN)</div>
+          <div class="forecast-icon">🌧</div>
+          <div class="forecast-hi">28°</div>
+          <div class="forecast-lo">23°</div>
+        </div>
+        <div class="forecast-item">
+          <div class="forecast-day">SAT (06 JUN)</div>
+          <div class="forecast-icon">🌦</div>
+          <div class="forecast-hi">31°</div>
+          <div class="forecast-lo">25°</div>
+        </div>
+        <div class="forecast-item">
+          <div class="forecast-day">SUN (07 JUN)</div>
+          <div class="forecast-icon">🌤</div>
+          <div class="forecast-hi">33°</div>
+          <div class="forecast-lo">26°</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="tab-alerts">
+      <div class="grid-hero">
+        <div class="card">
+          <div class="card-label">Active Warnings Database</div>
+          <div class="alert-list">
+            <div class="alert-item alert-extreme" style="padding:14px;">
+              <div class="alert-item-icon" style="font-size:24px;">🌀</div>
+              <div class="alert-item-body">
+                <div class="alert-item-title" style="font-size:14px;margin-bottom:4px;">Cyclone Watch — Bay of Bengal Deep Depression</div>
+                <div class="alert-item-desc">System has consolidated into deep depression tracking North-Northwest. Wind speeds exceeding 75km/h monitored. Final landfall zone coordinates active. High oceanic storm surge expected. Fishermen warning code 4 enforced.</div>
+                <div style="margin-top:8px;font-family:'Space Mono',monospace;font-size:9px;color:var(--text-muted);">ISSUED: 08:30 IST &nbsp;·&nbsp; VALID: 48 hrs</div>
+              </div>
+              <div class="alert-severity sev-extreme">EXTREME</div>
+            </div>
+            <div class="alert-item alert-high" style="padding:14px;">
+              <div class="alert-item-icon" style="font-size:24px;">🌊</div>
+              <div class="alert-item-body">
+                <div class="alert-item-title" style="font-size:14px;margin-bottom:4px;">Flash Flood Inundation Warning — Damodar Basin</div>
+                <div class="alert-item-desc">Sustained releases from upstream reservoirs combined with heavy precipitation have forced water levels near design embankments. Inundation of lower agrarian sub-catchments highly likely. Communities in embankment zones advised immediate evacuation.</div>
+                <div style="margin-top:8px;font-family:'Space Mono',monospace;font-size:9px;color:var(--text-muted);">ISSUED: 11:00 IST &nbsp;·&nbsp; VALID: 24–36 hrs</div>
+              </div>
+              <div class="alert-severity sev-high">HIGH</div>
+            </div>
+            <div class="alert-item alert-medium" style="padding:14px;">
+              <div class="alert-item-icon" style="font-size:24px;">⛈</div>
+              <div class="alert-item-body">
+                <div class="alert-item-title" style="font-size:14px;margin-bottom:4px;">Severe Thunderstorm Warning</div>
+                <div class="alert-item-desc">Isolated severe thunderstorms with lightning and gusty winds 50–60 km/h. Hailstorm possible over North Bengal districts. Avoid open fields 5–9 PM.</div>
+                <div style="margin-top:8px;font-family:'Space Mono',monospace;font-size:9px;color:var(--text-muted);">ISSUED: 12:00 IST &nbsp;·&nbsp; VALID: This evening</div>
+              </div>
+              <div class="alert-severity sev-medium">MEDIUM</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card" style="margin-bottom:1rem;">
+            <div class="card-label">Alert History — Last 30 Days</div>
+            <div class="chart-wrap" style="height:200px;">
+              <canvas id="alertHistChart" role="img" aria-label="Bar chart showing alert frequency over last 30 days"></canvas>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-label">Alert Statistics</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;">
+              <div style="background:rgba(255,23,68,0.1);border:1px solid rgba(255,23,68,0.2);border-radius:10px;padding:12px;text-align:center;">
+                <div style="font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:#ff1744;">3</div>
+                <div style="font-size:11px;color:var(--text-muted);">Extreme</div>
+              </div>
+              <div style="background:rgba(255,109,0,0.1);border:1px solid rgba(255,109,0,0.2);border-radius:10px;padding:12px;text-align:center;">
+                <div style="font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:#ff6d00;">7</div>
+                <div style="font-size:11px;color:var(--text-muted);">High</div>
+              </div>
+              <div style="background:rgba(255,214,0,0.1);border:1px solid rgba(255,214,0,0.2);border-radius:10px;padding:12px;text-align:center;">
+                <div style="font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:#ffd600;">12</div>
+                <div style="font-size:11px;color:var(--text-muted);">Medium</div>
+              </div>
+              <div style="background:rgba(0,230,118,0.08);border:1px solid rgba(0,230,118,0.2);border-radius:10px;padding:12px;text-align:center;">
+                <div style="font-family:'Syne',sans-serif;font-size:32px;font-weight:800;color:#00e676;">18</div>
+                <div style="font-size:11px;color:var(--text-muted);">Low</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="tab-airquality">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-label">Air Quality Index — Kolkata</div>
+          <div style="margin:16px 0;">
+            <div style="display:flex;align-items:baseline;gap:12px;">
+              <div style="font-family:'Syne',sans-serif;font-size:64px;font-weight:800;color:var(--aurora-green);">42</div>
+              <div style="font-size:18px;color:var(--aurora-green);font-weight:500;">GOOD AQI STATUS</div>
+            </div>
+            <p style="font-size:13px;color:var(--text-secondary);margin-top:8px;line-height:1.5;">
+              Air quality is considered satisfactory, and air pollution poses little or no risk. Atmospheric clearing caused by high-velocity marine winds.
+            </p>
+          </div>
+          <div class="aqi-meter">
+            <div class="aqi-block active" style="background:#00e676;"></div>
+            <div class="aqi-block" style="background:#ffd600;"></div>
+            <div class="aqi-block" style="background:#ff6d00;"></div>
+            <div class="aqi-block" style="background:#ff1744;"></div>
+            <div class="aqi-block" style="background:#b71c1c;"></div>
+          </div>
+          <div class="aqi-labels">
+            <span>0-50 (GOOD)</span>
+            <span>51-100 (MODERATE)</span>
+            <span>101-150 (UNHEALTHY)</span>
+            <span>151+ (HAZARDOUS)</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-label">Particulate & Gas Composition</div>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-top:8px;">
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-secondary);margin-bottom:4px;"><span>PM2.5 (Fine Particulates)</span><span style="font-family:'Space Mono',monospace;">11 µg/m³ (Safe)</span></div>
+              <div style="height:4px;background:rgba(255,255,255,0.05);border-radius:2px;"><div style="height:100%;width:22%;background:var(--aurora-green);border-radius:2px;"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-secondary);margin-bottom:4px;"><span>PM10 (Coarse Particulates)</span><span style="font-family:'Space Mono',monospace;">38 µg/m³ (Safe)</span></div>
+              <div style="height:4px;background:rgba(255,255,255,0.05);border-radius:2px;"><div style="height:100%;width:38%;background:var(--aurora-green);border-radius:2px;"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-secondary);margin-bottom:4px;"><span>NO₂ (Nitrogen Dioxide)</span><span style="font-family:'Space Mono',monospace;">14 ppb (Low)</span></div>
+              <div style="height:4px;background:rgba(255,255,255,0.05);border-radius:2px;"><div style="height:100%;width:14%;background:var(--aurora-green);border-radius:2px;"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-secondary);margin-bottom:4px;"><span>O₃ (Ozone Concentration)</span><span style="font-family:'Space Mono',monospace;">28 ppb (Normal)</span></div>
+              <div style="height:4px;background:rgba(255,255,255,0.05);border-radius:2px;"><div style="height:100%;width:28%;background:var(--aurora-green);border-radius:2px;"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-secondary);margin-bottom:4px;"><span>SO₂ (Sulfur Dioxide)</span><span style="font-family:'Space Mono',monospace;">2.4 ppb (Negligible)</span></div>
+              <div style="height:4px;background:rgba(255,255,255,0.05);border-radius:2px;"><div style="height:100%;width:8%;background:var(--aurora-green);border-radius:2px;"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:1rem;">
+        <div class="card-label">7-Day Diurnal AQI Trend Loop</div>
+        <div class="chart-wrap" style="height:220px;">
+          <canvas id="aqiChart" role="img" aria-label="Line graph representing the past week's air quality indices"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="tab-travel">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-label">Regional Transit Safety Quotient</div>
+          <div class="safety-score">
+            <div class="safety-circle" style="border-color:#ffd600;color:#ffd600;">
+              <div class="safety-num" style="color:#ffd600;">58</div>
+            </div>
+            <div class="safety-details">
+              <div style="font-size:16px;font-weight:500;color:#ffd600;margin-bottom:8px;">Moderate Risk</div>
+              <div class="safety-row">
+                <span>Road conditions</span>
+                <span style="color:#ff6d00;font-family:'Space Mono',monospace;font-size:10px;">POOR</span>
+              </div>
+              <div class="safety-row">
+                <span>Visibility</span>
+                <span style="color:#ffd600;font-family:'Space Mono',monospace;font-size:10px;">FAIR</span>
+              </div>
+              <div class="safety-row">
+                <span>Flight delays</span>
+                <span style="color:#ff5252;font-family:'Space Mono',monospace;font-size:10px;">LIKELY</span>
+              </div>
+              <div class="safety-row">
+                <span>Train services</span>
+                <span style="color:#00e676;font-family:'Space Mono',monospace;font-size:10px;">NORMAL</span>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:12px;padding:10px;background:rgba(255,214,0,0.08);border-radius:8px;font-size:11px;color:var(--text-secondary);line-height:1.5;">
+            Avoid coastal routes south of Kolkata. Highways NH-16 and NH-12 may have water-logging by evening. Plan alternative routes.
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-label">Mode-wise Safety</div>
+          <div style="display:flex;flex-direction:column;gap:12px;margin-top:8px;">
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+                <span style="font-size:12px;color:var(--text-secondary);">✈ Air Travel</span>
+                <span style="font-family:'Space Mono',monospace;font-size:10px;color:#ff5252;">40/100</span>
+              </div>
+              <div style="height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;">
+                <div style="height:100%;width:40%;background:#ff5252;border-radius:3px;"></div>
+              </div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+                <span style="font-size:12px;color:var(--text-secondary);">🚂 Rail Travel</span>
+                <span style="font-family:'Space Mono',monospace;font-size:10px;color:#69f0ae;">78/100</span>
+              </div>
+              <div style="height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;">
+                <div style="height:100%;width:78%;background:#69f0ae;border-radius:3px;"></div>
+              </div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+                <span style="font-size:12px;color:var(--text-secondary);">🚗 Road Transport</span>
+                <span style="font-family:'Space Mono',monospace;font-size:10px;color:#ffab00;">55/100</span>
+              </div>
+              <div style="height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;">
+                <div style="height:100%;width:55%;background:#ffab00;border-radius:3px;"></div>
+              </div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+                <span style="font-size:12px;color:var(--text-secondary);">🚢 Maritime Fleet</span>
+                <span style="font-family:'Space Mono',monospace;font-size:10px;color:#ff1744;">15/100</span>
+              </div>
+              <div style="height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;">
+                <div style="height:100%;width:15%;background:#ff1744;border-radius:3px;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="tab-analytics">
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-label">Annual Rainfall Deviations (mm)</div>
+          <div class="chart-wrap" style="height:260px;">
+            <canvas id="rainfallChart" role="img" aria-label="Bar chart displaying monthly rainfall distribution"></canvas>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-label">Thermal Envelope Envelope (Min vs Max Thresholds)</div>
+          <div class="chart-wrap" style="height:260px;">
+            <canvas id="tempRangeChart" role="img" aria-label="Line chart demonstrating historical thermal variation ranges over the months"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    <div class="footer-dots">
+      <div class="footer-dot"></div>
+      <div class="footer-dot"></div>
+      <div class="footer-dot"></div>
+      Data synced live
+    </div>
+    <div>IMD · OpenMeteo · Sentinel API</div>
+  </footer>
+
+</div>
+<script src="script.js"></script>
+</body>
+</html>
